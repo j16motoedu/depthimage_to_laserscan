@@ -49,9 +49,9 @@ namespace depthimage_to_laserscan
 
 DepthImageToLaserScan::DepthImageToLaserScan(
   float scan_time, float range_min, float range_max,
-  int scan_height, const std::string & frame_id)
+  int scan_height, int scan_offset, const std::string & frame_id)
 : scan_time_(scan_time), range_min_(range_min), range_max_(range_max), scan_height_(scan_height),
-  output_frame_id_(frame_id)
+  scan_offset_(scan_offset), output_frame_id_(frame_id)
 {
 }
 
