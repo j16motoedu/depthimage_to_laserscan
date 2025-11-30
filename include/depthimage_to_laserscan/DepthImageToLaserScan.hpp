@@ -69,13 +69,15 @@ public:
    *                    radii for each angular increment.  The output scan will output the closest radius that is
    *                    still not smaller than range_min.  This can be used to vertically compress obstacles into
    *                    a single LaserScan.
+   * @param scan_offset The vertical offset in pixels from the image center for the scan region. Positive values
+   *                    offset above the center, negative below.
    * @param frame_id The output frame_id for the LaserScan.  This will probably NOT be the same frame_id as the
    *                 depth image.  Example: For OpenNI cameras, this should be set to 'camera_depth_frame' while
    *                 the camera uses 'camera_depth_optical_frame'.
    *
    */
   explicit DepthImageToLaserScan(
-    float scan_time, float range_min, float range_max, int scan_height,
+    float scan_time, float range_min, float range_max, int scan_height, int scan_offset,
     const std::string & frame_id);
 
   ~DepthImageToLaserScan();
@@ -167,7 +169,8 @@ private:
     const T * depth_row = reinterpret_cast<const T *>(&depth_msg->data[0]);
     int row_step = depth_msg->step / sizeof(T);
 
-    int offset = static_cast<int>(cam_model.cy() - static_cast<double>(scan_height) / 2.0);
+    int offset = static_cast<int>(cam_model.cy() - static_cast<double>(scan_height) / 2.0) +
+      scan_offset_;
     depth_row += offset * row_step;  // Offset to center of image
     for (int v = offset; v < offset + scan_height_; v++, depth_row += row_step) {
       for (uint32_t u = 0; u < depth_msg->width; u++) {  // Loop over each pixel in row
@@ -202,6 +205,7 @@ private:
   float range_min_;  ///< Stores the current minimum range to use.
   float range_max_;  ///< Stores the current maximum range to use.
   int scan_height_;  ///< Number of pixel rows to use when producing a laserscan from an area.
+  int scan_offset_;  ///< Vertical offset in pixels from the image center for the scan region.
   ///< Output frame_id for each laserscan.  This is likely NOT the camera's frame_id.
   std::string output_frame_id_;
 };

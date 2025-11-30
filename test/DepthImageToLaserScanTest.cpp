@@ -55,7 +55,7 @@ sensor_msgs::msg::CameraInfo::SharedPtr info_msg_;
 TEST(ConvertTest, setupLibrary)
 {
   depthimage_to_laserscan::DepthImageToLaserScan dtl(g_scan_time, g_range_min,
-    g_range_max, g_scan_height, g_output_frame);
+    g_range_max, g_scan_height, 0, g_output_frame);
 
   depth_msg_.reset(new sensor_msgs::msg::Image);
   depth_msg_->header.stamp.sec = 0;
@@ -128,7 +128,7 @@ TEST(ConvertTest, setupLibrary)
 TEST(ConvertTest, testExceptions)
 {
   depthimage_to_laserscan::DepthImageToLaserScan dtl(g_scan_time, g_range_min,
-    g_range_max, g_scan_height, g_output_frame);
+    g_range_max, g_scan_height, 0, g_output_frame);
 
   // Test supported image encodings for exceptions
   // Does not segfault as long as scan_height = 1
@@ -145,7 +145,7 @@ TEST(ConvertTest, testScanHeight)
 {
   for (int scan_height = 1; scan_height <= 100; scan_height++) {
     depthimage_to_laserscan::DepthImageToLaserScan dtl(g_scan_time, g_range_min,
-      g_range_max, scan_height, g_output_frame);
+      g_range_max, scan_height, 0, g_output_frame);
     uint16_t low_value = 500;
     uint16_t high_value = 3000;
 
@@ -188,8 +188,8 @@ TEST(ConvertTest, testScanHeight)
 // (range_max is currently violated to fill the messages)
 TEST(ConvertTest, testRandom)
 {
-  std::mt19937 rng(8675309);  // Set seed for repeatable tests
-  std::uniform_int_distribution<uint16_t> uniform_int(0, 500);
+  std::mt19937 rng(0);
+  std::uniform_int_distribution<uint16_t> uniform_int(0, 10000);
 
   uint16_t * data = reinterpret_cast<uint16_t *>(&depth_msg_->data[0]);
   for (size_t i = 0; i < depth_msg_->width * depth_msg_->height; i++) {
@@ -197,7 +197,7 @@ TEST(ConvertTest, testRandom)
   }
 
   depthimage_to_laserscan::DepthImageToLaserScan dtl(g_scan_time, g_range_min,
-    g_range_max, g_scan_height, g_output_frame);
+    g_range_max, g_scan_height, 0, g_output_frame);
 
   // Convert
   sensor_msgs::msg::LaserScan::SharedPtr scan_msg = dtl.convert_msg(depth_msg_, info_msg_);
@@ -226,7 +226,7 @@ TEST(ConvertTest, testNaN)
   }
 
   depthimage_to_laserscan::DepthImageToLaserScan dtl(g_scan_time, g_range_min,
-    g_range_max, g_scan_height, g_output_frame);
+    g_range_max, g_scan_height, 0, g_output_frame);
 
   // Convert
   sensor_msgs::msg::LaserScan::SharedPtr scan_msg = dtl.convert_msg(float_msg, info_msg_);
@@ -254,7 +254,7 @@ TEST(ConvertTest, testPositiveInf)
   }
 
   depthimage_to_laserscan::DepthImageToLaserScan dtl(g_scan_time, g_range_min,
-    g_range_max, g_scan_height, g_output_frame);
+    g_range_max, g_scan_height, 0, g_output_frame);
 
   // Convert
   sensor_msgs::msg::LaserScan::SharedPtr scan_msg = dtl.convert_msg(float_msg, info_msg_);
@@ -289,7 +289,7 @@ TEST(ConvertTest, testNegativeInf)
   }
 
   depthimage_to_laserscan::DepthImageToLaserScan dtl(g_scan_time, g_range_min,
-    g_range_max, g_scan_height, g_output_frame);
+    g_range_max, g_scan_height, 0, g_output_frame);
 
   // Convert
   sensor_msgs::msg::LaserScan::SharedPtr scan_msg = dtl.convert_msg(float_msg, info_msg_);
