@@ -22,10 +22,11 @@ find_package(sensor_msgs REQUIRED)
 add_library(DepthImageToLaserScan
   src/DepthImageToLaserScan.cpp
 )
-target_link_libraries(DepthImageToLaserScan PUBLIC
-  image_geometry::image_geometry
-  opencv_core
-  ${sensor_msgs_TARGETS})
+ament_target_dependencies(DepthImageToLaserScan
+  image_geometry
+  OpenCV
+  sensor_msgs
+)
 
 generate_export_header(DepthImageToLaserScan EXPORT_FILE_NAME ${PROJECT_NAME}/DepthImageToLaserScan_export.h)
 target_include_directories(DepthImageToLaserScan PUBLIC
